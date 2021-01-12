@@ -13,7 +13,7 @@ namespace Conway_s_Game_Of_Life
     public partial class Form1 : Form
     {
         // The universe array
-        bool[,] universe = new bool[5, 5];
+        bool[,] universe = new bool[50, 50];
 
         // Drawing colors
         Color gridColor = Color.Black;
@@ -29,49 +29,56 @@ namespace Conway_s_Game_Of_Life
         {
             InitializeComponent();
 
+            #region //test bools
+            //universe[0, 0] = true;
+            //universe[0, 1] = true;
+            //universe[0, 2] = true;
+            //universe[0, 3] = true;
+            //universe[0, 4] = true;
+            //universe[1, 0] = true;
+            //universe[1, 1] = true;
+            //universe[1, 2] = true;
+            //universe[1, 3] = true;
+            //universe[1, 4] = true;
+            //universe[2, 0] = true;
+            //universe[2, 1] = true;
+            //universe[2, 2] = true;
+            //universe[2, 3] = true;
+            //universe[2, 4] = true;
+            //universe[3, 0] = true;
+            //universe[3, 1] = true;
+            //universe[3, 2] = true;
+            //universe[3, 3] = true;
+            //universe[3, 4] = true;
+            //universe[4, 0] = true;
+            //universe[4, 1] = true;
+            //universe[4, 2] = true;
+            //universe[4, 3] = true;
+            //universe[4, 4] = true;
+            #endregion
+
             // Setup the timer
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
-            timer.Enabled = true; // start timer running
+            timer.Enabled = false; // start timer running
         }
 
         // Calculate the next generation of cells
         private void NextGeneration()
         {
-            universe[0, 0] = true;
-            universe[0, 1] = true;
-            universe[0, 2] = true;
-            universe[0, 3] = true;
-            universe[0, 4] = true;
-            universe[1, 0] = true;
-            universe[1, 1] = true;
-            universe[1, 2] = true;
-            universe[1, 3] = true;
-            universe[1, 4] = true;
-            universe[2, 0] = true;
-            universe[2, 1] = true;
-            universe[2, 2] = true;
-            universe[2, 3] = true;
-            universe[2, 4] = true;
-            universe[3, 0] = true;
-            universe[3, 1] = true;
-            universe[3, 2] = true;
-            universe[3, 3] = true;
-            universe[3, 4] = true;
-            universe[4, 0] = true;
-            universe[4, 1] = true;
-            universe[4, 2] = true;
-            universe[4, 3] = true;
-            universe[4, 4] = true;
-            _ = GameRules.CountNeighborsToroidol(ref universe, 4, 3);
 
-            for (int i = 0; i < universe.GetLength(0); i++)
+            //creates a list to hold the cells that need to be toggled
+            List<CellPoint> cellsToToggle = new List<CellPoint>();
+            //clears the lsit, then adds to it
+            GameRules.CalculateRules(ref universe, cellsToToggle);
+
+            //iterates through all cells to be toggled
+            for (int i = 0; i < cellsToToggle.Count; i++)
             {
-                for (int j = 0; j < universe.GetLength(1); j++)
-                {
-                    universe[i, j] = GameRules.CalculateRules(ref universe, i, j);
-                }
+                universe[cellsToToggle[i].cellX, cellsToToggle[i].cellY] = cellsToToggle[i].cellState;
             }
+
+
 
             // Increment generation count
             generations++;
@@ -84,6 +91,7 @@ namespace Conway_s_Game_Of_Life
         private void Timer_Tick(object sender, EventArgs e)
         {
             NextGeneration();
+            graphicsPanel1.Invalidate();
         }
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
@@ -127,6 +135,8 @@ namespace Conway_s_Game_Of_Life
             // Cleaning up pens and brushes
             gridPen.Dispose();
             cellBrush.Dispose();
+
+           
         }
 
         private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e)
@@ -151,5 +161,18 @@ namespace Conway_s_Game_Of_Life
                 graphicsPanel1.Invalidate();
             }
         }
+
+        private void newToolStripButton_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < universe.GetLength(0); i++)
+            {
+                for (int j = 0; j < universe.GetLength(1); j++)
+                {
+                    universe[i, j] = false;
+                }
+            }
+            generations = 0;
+        }
+
     }
 }
