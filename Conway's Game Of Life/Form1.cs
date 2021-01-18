@@ -12,8 +12,11 @@ namespace Conway_s_Game_Of_Life
 {
     public partial class Form1 : Form
     {
+        static int xCellCount = 50;
+        static int yCellCount = 50;
+
         // The universe array
-        bool[,] universe = new bool[50, 50];
+        bool[,] universe = new bool[xCellCount, yCellCount];
 
         // Drawing colors
         Color gridColor = Color.Black;
@@ -152,8 +155,14 @@ namespace Conway_s_Game_Of_Life
                 }
             }
 
-            //resets the generation
+            //resets the settings
             generations = 0;
+
+            GameRules.isToroidal = false;
+
+            timer.Interval = 100;
+
+
             UpdateBottomText();
 
             //turns off the timer if its on
@@ -224,10 +233,6 @@ namespace Conway_s_Game_Of_Life
 
             seed = randy.Next(0, 1073741824);
             randomizeMaxValue = randy.Next(0, 101);
-
-
-            graphicsPanel1.Invalidate();
-
         }
 
         private void UpdateBottomText()
@@ -264,6 +269,27 @@ namespace Conway_s_Game_Of_Life
 
 
             toolStripStatusLabelGenerations.Text = generationText + modeText + cellsText + timerText;
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SettingsForm dlg = new SettingsForm();
+
+            dlg.SetInterval(timer.Interval);
+            dlg.SetXCells(xCellCount);
+            dlg.SetYCells(yCellCount);
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                timer.Interval = dlg.GetInterval();
+                xCellCount = dlg.GetXCells();
+                yCellCount = dlg.GetYCells();
+                universe = new bool[xCellCount, yCellCount];
+
+                graphicsPanel1.Invalidate();
+                UpdateBottomText();
+            }
+
         }
     }
 }
