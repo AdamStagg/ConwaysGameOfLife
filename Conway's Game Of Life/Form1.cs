@@ -25,37 +25,14 @@ namespace Conway_s_Game_Of_Life
         // Generation count
         int generations = 0;
 
+
+        int seed = 0;
+        private int randomizeMaxValue = 50;
+
         public Form1()
         {
             InitializeComponent();
-
-            #region //test bools
-            //universe[0, 0] = true;
-            //universe[0, 1] = true;
-            //universe[0, 2] = true;
-            //universe[0, 3] = true;
-            //universe[0, 4] = true;
-            //universe[1, 0] = true;
-            //universe[1, 1] = true;
-            //universe[1, 2] = true;
-            //universe[1, 3] = true;
-            //universe[1, 4] = true;
-            //universe[2, 0] = true;
-            //universe[2, 1] = true;
-            //universe[2, 2] = true;
-            //universe[2, 3] = true;
-            //universe[2, 4] = true;
-            //universe[3, 0] = true;
-            //universe[3, 1] = true;
-            //universe[3, 2] = true;
-            //universe[3, 3] = true;
-            //universe[3, 4] = true;
-            //universe[4, 0] = true;
-            //universe[4, 1] = true;
-            //universe[4, 2] = true;
-            //universe[4, 3] = true;
-            //universe[4, 4] = true;
-            #endregion
+            UpdateBottomText();
 
             // Setup the timer
             timer.Interval = 100; // milliseconds
@@ -84,14 +61,15 @@ namespace Conway_s_Game_Of_Life
             generations++;
 
             // Update status strip generations
-            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            UpdateBottomText();
+
+            graphicsPanel1.Invalidate();
         }
 
         // The event called by the timer every Interval milliseconds.
         private void Timer_Tick(object sender, EventArgs e)
         {
             NextGeneration();
-            graphicsPanel1.Invalidate();
         }
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
@@ -159,11 +137,13 @@ namespace Conway_s_Game_Of_Life
 
                 // Tell Windows you need to repaint
                 graphicsPanel1.Invalidate();
+                UpdateBottomText();
             }
         }
 
         private void newToolStripButton_Click(object sender, EventArgs e)
         {
+            //turns every cell off
             for (int i = 0; i < universe.GetLength(0); i++)
             {
                 for (int j = 0; j < universe.GetLength(1); j++)
@@ -171,8 +151,119 @@ namespace Conway_s_Game_Of_Life
                     universe[i, j] = false;
                 }
             }
+
+            //resets the generation
             generations = 0;
+            UpdateBottomText();
+
+            //turns off the timer if its on
+            timer.Enabled = false;
+
+            //resets the screen
+            graphicsPanel1.Invalidate();
         }
 
+        private void PauseButton_Click(object sender, EventArgs e)
+        {
+            timer.Enabled = false;
+        }
+
+        private void PlayButton_Click(object sender, EventArgs e)
+        {
+            timer.Enabled = true;
+        }
+
+        private void NextGenerationButton_Click(object sender, EventArgs e)
+        {
+            NextGeneration();
+        }
+
+
+        private void settingsToolStripMenuItem1_Click(object sender, EventArgs e) //Displays the randomize menu
+        {
+            RandomizeForm dlg = new RandomizeForm();
+
+            dlg.SetSeed(seed);
+            dlg.SetDensity(randomizeMaxValue);
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                seed = dlg.GetSeed();
+                randomizeMaxValue = dlg.GetDensity();
+            }
+        }
+
+        private void randomizeCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomizes all cells
+        {
+            Random randy = new Random(seed);
+
+            for (int i = 0; i < universe.GetLength(0); i++) //loops through all x
+            {
+                for (int j = 0; j < universe.GetLength(1); j++) //loops through all y
+                {
+                    if (randy.Next(0, 100) <= randomizeMaxValue)
+                    {
+                        universe[i, j] = true;
+                    }
+                    else
+                    {
+                        universe[i, j] = false;
+                    }
+
+                    
+                }
+            }
+            graphicsPanel1.Invalidate();
+            UpdateBottomText();
+            
+        }
+
+        private void randomizeSeedCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomizes the settings
+        {
+            Random randy = new Random((int)DateTime.Now.Ticks);
+
+            seed = randy.Next(0, 1073741824);
+            randomizeMaxValue = randy.Next(0, 101);
+
+
+            graphicsPanel1.Invalidate();
+
+        }
+
+        private void UpdateBottomText()
+        {
+            string generationText = "";
+            generationText = "Generations = " + generations.ToString() + "     ";
+
+
+            string modeText = "";
+            if (GameRules.isToroidal)
+            {
+                modeText = "Mode: Toroidal     ";
+            } else
+            {
+                modeText = "Mode: Finite     ";
+            }
+
+            string cellsText = "";
+            int aliveCells = 0;
+            for (int x = 0; x < universe.GetLength(0); x++)
+            {
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    if (universe[x,y])
+                    {
+                        aliveCells++;
+                    }
+                }
+            }
+            cellsText = "Cells Alive: " + aliveCells + "     ";
+
+            string timerText = "";
+            timerText = "Interval: " + timer.Interval.ToString();
+
+
+            toolStripStatusLabelGenerations.Text = generationText + modeText + cellsText + timerText;
+        }
     }
 }

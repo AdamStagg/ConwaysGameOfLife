@@ -9,7 +9,7 @@ namespace Conway_s_Game_Of_Life
     public static class GameRules
     {
 
-        public static bool isToroidol = false;
+        public static bool isToroidal = false;
 
         public static int CountNeighbors(ref bool[,] universe, int x, int y)
         {
@@ -34,8 +34,7 @@ namespace Conway_s_Game_Of_Life
 
             return count;
         }
-
-        public static int CountNeighborsToroidol(ref bool[,] universe, int x, int y)
+        public static int CountNeighborsToroidal(ref bool[,] universe, int x, int y)
         {
             int count = 0;
 
@@ -57,10 +56,6 @@ namespace Conway_s_Game_Of_Life
 
             return count;
         }
-
-
-
-
         public static void CalculateRules(ref bool[,] universe,  List<CellPoint> cellsToToggle)
         {
             int temp = 0;
@@ -71,9 +66,9 @@ namespace Conway_s_Game_Of_Life
                 for (int j = 0; j < universe.GetLength(1); j++) //iterates y cells
                 {
                     #region //checks to see if the toroidol mode is on
-                    if (isToroidol)
+                    if (isToroidal)
                     {
-                        temp = CountNeighborsToroidol(ref universe, i, j);
+                        temp = CountNeighborsToroidal(ref universe, i, j);
                     }
                     else
                     {
@@ -113,21 +108,11 @@ namespace Conway_s_Game_Of_Life
 
     public class CellPoint
     {
+        //holds the x, y, and state of a cell
         public int cellX = 0;
-        //{
-        //    get => cellX;
-        //    private set => cellX = value;
-        //}
         public int cellY = 0;
-        //{
-        //    get => cellY;
-        //    private set => cellY = value;
-        //}
         public bool cellState = false;
-        //{
-        //    get => cellState;
-        //    private set => cellState = value;
-        //}
+
         public CellPoint(int x, int y, bool value)
         {
             cellX = x;

@@ -17,6 +17,9 @@ namespace Conway_s_Game_Of_Life
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+     
+
+            
         }
     }
 }
