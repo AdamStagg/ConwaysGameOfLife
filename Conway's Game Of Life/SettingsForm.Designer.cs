@@ -32,16 +32,16 @@ namespace Conway_s_Game_Of_Life
             this.CancelButton = new System.Windows.Forms.Button();
             this.OKButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.TimerIntervalText = new System.Windows.Forms.Label();
-            this.intervalSlider = new System.Windows.Forms.NumericUpDown();
-            this.xCellsCount = new System.Windows.Forms.Label();
-            this.YCellsCount = new System.Windows.Forms.Label();
-            this.xCellSlider = new System.Windows.Forms.NumericUpDown();
             this.yCellsSlider = new System.Windows.Forms.NumericUpDown();
+            this.xCellSlider = new System.Windows.Forms.NumericUpDown();
+            this.YCellsCount = new System.Windows.Forms.Label();
+            this.xCellsCount = new System.Windows.Forms.Label();
+            this.intervalSlider = new System.Windows.Forms.NumericUpDown();
+            this.TimerIntervalText = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.intervalSlider)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xCellSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yCellsSlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xCellSlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.intervalSlider)).BeginInit();
             this.SuspendLayout();
             // 
             // CancelButton
@@ -56,13 +56,13 @@ namespace Conway_s_Game_Of_Life
             // 
             // OKButton
             // 
-            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(167, 151);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 0;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
+            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
             // 
             // panel1
             // 
@@ -80,14 +80,47 @@ namespace Conway_s_Game_Of_Life
             this.panel1.Size = new System.Drawing.Size(335, 189);
             this.panel1.TabIndex = 2;
             // 
-            // TimerIntervalText
+            // yCellsSlider
             // 
-            this.TimerIntervalText.AutoSize = true;
-            this.TimerIntervalText.Location = new System.Drawing.Point(30, 32);
-            this.TimerIntervalText.Name = "TimerIntervalText";
-            this.TimerIntervalText.Size = new System.Drawing.Size(93, 13);
-            this.TimerIntervalText.TabIndex = 0;
-            this.TimerIntervalText.Text = "Timer Interval (ms)";
+            this.yCellsSlider.Location = new System.Drawing.Point(139, 106);
+            this.yCellsSlider.Maximum = new decimal(new int[] {
+            250,
+            0,
+            0,
+            0});
+            this.yCellsSlider.Name = "yCellsSlider";
+            this.yCellsSlider.Size = new System.Drawing.Size(120, 20);
+            this.yCellsSlider.TabIndex = 5;
+            // 
+            // xCellSlider
+            // 
+            this.xCellSlider.Location = new System.Drawing.Point(139, 67);
+            this.xCellSlider.Maximum = new decimal(new int[] {
+            250,
+            0,
+            0,
+            0});
+            this.xCellSlider.Name = "xCellSlider";
+            this.xCellSlider.Size = new System.Drawing.Size(120, 20);
+            this.xCellSlider.TabIndex = 4;
+            // 
+            // YCellsCount
+            // 
+            this.YCellsCount.AutoSize = true;
+            this.YCellsCount.Location = new System.Drawing.Point(30, 108);
+            this.YCellsCount.Name = "YCellsCount";
+            this.YCellsCount.Size = new System.Drawing.Size(65, 13);
+            this.YCellsCount.TabIndex = 3;
+            this.YCellsCount.Text = "Y Cell Count";
+            // 
+            // xCellsCount
+            // 
+            this.xCellsCount.AutoSize = true;
+            this.xCellsCount.Location = new System.Drawing.Point(30, 69);
+            this.xCellsCount.Name = "xCellsCount";
+            this.xCellsCount.Size = new System.Drawing.Size(65, 13);
+            this.xCellsCount.TabIndex = 2;
+            this.xCellsCount.Text = "X Cell Count";
             // 
             // intervalSlider
             // 
@@ -101,44 +134,19 @@ namespace Conway_s_Game_Of_Life
             this.intervalSlider.Size = new System.Drawing.Size(120, 20);
             this.intervalSlider.TabIndex = 1;
             // 
-            // xCellsCount
+            // TimerIntervalText
             // 
-            this.xCellsCount.AutoSize = true;
-            this.xCellsCount.Location = new System.Drawing.Point(30, 69);
-            this.xCellsCount.Name = "xCellsCount";
-            this.xCellsCount.Size = new System.Drawing.Size(65, 13);
-            this.xCellsCount.TabIndex = 2;
-            this.xCellsCount.Text = "X Cell Count";
-            // 
-            // YCellsCount
-            // 
-            this.YCellsCount.AutoSize = true;
-            this.YCellsCount.Location = new System.Drawing.Point(30, 108);
-            this.YCellsCount.Name = "YCellsCount";
-            this.YCellsCount.Size = new System.Drawing.Size(65, 13);
-            this.YCellsCount.TabIndex = 3;
-            this.YCellsCount.Text = "Y Cell Count";
-            // 
-            // xCellSlider
-            // 
-            this.xCellSlider.Location = new System.Drawing.Point(139, 67);
-            this.xCellSlider.Name = "xCellSlider";
-            this.xCellSlider.Size = new System.Drawing.Size(120, 20);
-            this.xCellSlider.TabIndex = 4;
-            // 
-            // yCellsSlider
-            // 
-            this.yCellsSlider.Location = new System.Drawing.Point(139, 106);
-            this.yCellsSlider.Name = "yCellsSlider";
-            this.yCellsSlider.Size = new System.Drawing.Size(120, 20);
-            this.yCellsSlider.TabIndex = 5;
+            this.TimerIntervalText.AutoSize = true;
+            this.TimerIntervalText.Location = new System.Drawing.Point(30, 32);
+            this.TimerIntervalText.Name = "TimerIntervalText";
+            this.TimerIntervalText.Size = new System.Drawing.Size(93, 13);
+            this.TimerIntervalText.TabIndex = 0;
+            this.TimerIntervalText.Text = "Timer Interval (ms)";
             // 
             // SettingsForm
             // 
-            this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.CancelButton;
             this.ClientSize = new System.Drawing.Size(335, 189);
             this.Controls.Add(this.panel1);
             this.MaximizeBox = false;
@@ -148,9 +156,9 @@ namespace Conway_s_Game_Of_Life
             this.Text = "Settings";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.intervalSlider)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xCellSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yCellsSlider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xCellSlider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.intervalSlider)).EndInit();
             this.ResumeLayout(false);
 
         }

@@ -11,7 +11,7 @@ namespace Conway_s_Game_Of_Life
 
         public static bool isToroidal = false;
 
-        public static int CountNeighbors(ref bool[,] universe, int x, int y)
+        public static int CountNeighborsFinite(ref bool[,] universe, int x, int y)
         {
             int count = 0;
             for (int i = -1; i <= 1; i++) // iterates x offset
@@ -37,14 +37,26 @@ namespace Conway_s_Game_Of_Life
         public static int CountNeighborsToroidal(ref bool[,] universe, int x, int y)
         {
             int count = 0;
+            int xCheck = 0;
+            int yCheck = 0;
 
             for (int i = -1; i <= 1; i++) // iterates x offset
             {
                 for (int j = -1; j <= 1; j++) // iterates y offset
                 {
-                    int xPos = (x + i) % universe.GetLength(0);
-                    int yPos = (y + j) % universe.GetLength(1);
-                    if (universe[xPos, yPos])
+                    if (x + i < 0) xCheck = universe.GetLength(0)-1;
+                    else if (x + i >= universe.GetLength(0)) xCheck = 0;
+                    else xCheck = x + i;
+
+                    if (y + j < 0) yCheck = universe.GetLength(1)-1;
+                    else if (y + j >= universe.GetLength(1)) yCheck = 0;
+                    else yCheck = y + j;
+
+
+
+                    //int xPos = (x + i) % universe.GetLength(0);
+                    //int yPos = (y + j) % universe.GetLength(1);
+                    if (universe[xCheck, yCheck])
                     {
                         if (!(i == 0 && j == 0))
                         {
@@ -72,7 +84,7 @@ namespace Conway_s_Game_Of_Life
                     }
                     else
                     {
-                        temp = CountNeighbors(ref universe, i, j);
+                        temp = CountNeighborsFinite(ref universe, i, j);
                     }
                     #endregion
 

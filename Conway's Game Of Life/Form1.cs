@@ -12,15 +12,15 @@ namespace Conway_s_Game_Of_Life
 {
     public partial class Form1 : Form
     {
-        static int xCellCount = 50;
-        static int yCellCount = 50;
+        static int xCellCount;
+        static int yCellCount;
 
         // The universe array
-        bool[,] universe = new bool[xCellCount, yCellCount];
+        bool[,] universe = new bool[30,30];
 
         // Drawing colors
-        Color gridColor = Color.Black;
-        Color cellColor = Color.Gray;
+        Color gridColor;
+        Color cellColor;
 
         // The Timer class
         Timer timer = new Timer();
@@ -35,13 +35,20 @@ namespace Conway_s_Game_Of_Life
         public Form1()
         {
             InitializeComponent();
-            UpdateBottomText();
+
+            ReadSettings(); //reads all settings and updates the local equivilent
+
+            
+            universe = new bool[xCellCount, yCellCount]; //initializes the universe
 
             // Setup the timer
-            timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
+
+            
+            UpdateBottomText(); //updates text at the bottom of the screen
         }
+
 
         // Calculate the next generation of cells
         private void NextGeneration()
@@ -117,10 +124,10 @@ namespace Conway_s_Game_Of_Life
             gridPen.Dispose();
             cellBrush.Dispose();
 
-           
+
         }
 
-        private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e)
+        private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e) //when you click, it updates the cells
         {
             // If the left mouse button was clicked
             if (e.Button == MouseButtons.Left)
@@ -144,7 +151,7 @@ namespace Conway_s_Game_Of_Life
             }
         }
 
-        private void newToolStripButton_Click(object sender, EventArgs e)
+        private void newToolStripButton_Click(object sender, EventArgs e) //new file
         {
             //turns every cell off
             for (int i = 0; i < universe.GetLength(0); i++)
@@ -157,19 +164,14 @@ namespace Conway_s_Game_Of_Life
 
             //resets the settings
             generations = 0;
-
-            GameRules.isToroidal = false;
-
-            timer.Interval = 100;
-
-
-            UpdateBottomText();
+           // GameRules.isToroidal = false;
 
             //turns off the timer if its on
             timer.Enabled = false;
 
             //resets the screen
             graphicsPanel1.Invalidate();
+            UpdateBottomText();
         }
 
         private void PauseButton_Click(object sender, EventArgs e)
@@ -218,13 +220,11 @@ namespace Conway_s_Game_Of_Life
                     {
                         universe[i, j] = false;
                     }
-
-                    
                 }
             }
             graphicsPanel1.Invalidate();
             UpdateBottomText();
-            
+
         }
 
         private void randomizeSeedCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomizes the settings
@@ -235,7 +235,7 @@ namespace Conway_s_Game_Of_Life
             randomizeMaxValue = randy.Next(0, 101);
         }
 
-        private void UpdateBottomText()
+        private void UpdateBottomText() //updates the text at the bottom of the screen
         {
             string generationText = "";
             generationText = "Generations = " + generations.ToString() + "     ";
@@ -245,7 +245,8 @@ namespace Conway_s_Game_Of_Life
             if (GameRules.isToroidal)
             {
                 modeText = "Mode: Toroidal     ";
-            } else
+            }
+            else
             {
                 modeText = "Mode: Finite     ";
             }
@@ -256,7 +257,7 @@ namespace Conway_s_Game_Of_Life
             {
                 for (int y = 0; y < universe.GetLength(1); y++)
                 {
-                    if (universe[x,y])
+                    if (universe[x, y])
                     {
                         aliveCells++;
                     }
@@ -271,8 +272,39 @@ namespace Conway_s_Game_Of_Life
             toolStripStatusLabelGenerations.Text = generationText + modeText + cellsText + timerText;
         }
 
-        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ReadSettings() //reads all settings and invalidates and updates the text
         {
+            timer.Interval = Properties.Settings.Default.TimerInterval;
+            cellColor = Properties.Settings.Default.CellColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            xCellCount = Properties.Settings.Default.XCells;
+            yCellCount = Properties.Settings.Default.YCells;
+            graphicsPanel1.BackColor = Properties.Settings.Default.PanelColor;
+            universe = new bool[xCellCount, yCellCount];
+            graphicsPanel1.Invalidate();
+            UpdateBottomText();
+        }
+
+        private void WriteSettings() //updates all the settings
+        {
+            Properties.Settings.Default.TimerInterval = timer.Interval;
+            Properties.Settings.Default.CellColor = cellColor;
+            Properties.Settings.Default.GridColor = gridColor;
+            Properties.Settings.Default.XCells = xCellCount;
+            Properties.Settings.Default.YCells = yCellCount;
+            Properties.Settings.Default.PanelColor = graphicsPanel1.BackColor;
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e) //event when the form is closed
+        {
+            WriteSettings();
+
+            Properties.Settings.Default.Save();
+        }
+
+        private void settingsToolStripMenuItem2_Click(object sender, EventArgs e) //shows the settings dialog including timer interval and universe size
+        {
+
             SettingsForm dlg = new SettingsForm();
 
             dlg.SetInterval(timer.Interval);
@@ -289,7 +321,87 @@ namespace Conway_s_Game_Of_Life
                 graphicsPanel1.Invalidate();
                 UpdateBottomText();
             }
+        }
 
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e) //reset the settings
+        {
+            DialogResult r = MessageBox.Show("This will reset all settings and delete the universe. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
+
+            if (r == DialogResult.Yes)
+            {
+                Properties.Settings.Default.Reset();
+
+                ReadSettings();
+            }
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e) //reloads the settings
+        {
+            DialogResult r = MessageBox.Show("This will reset all settings and delete the universe. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
+
+            if (r == DialogResult.Yes)
+            {
+                Properties.Settings.Default.Reload();
+
+                ReadSettings();
+            }
+        }
+
+        private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e) //shows dialog to change background color
+        {
+            ColorDialog dlg = new ColorDialog();
+
+            dlg.Color = graphicsPanel1.BackColor;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                graphicsPanel1.BackColor = dlg.Color;
+
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)//shows dialog to change cell color
+        {
+            ColorDialog dlg = new ColorDialog();
+
+            dlg.Color = cellColor;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                cellColor = dlg.Color;
+
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void aliveCellColorToolStripMenuItem_Click(object sender, EventArgs e)//shows dialog to change grid color
+        {
+            ColorDialog dlg = new ColorDialog();
+
+            dlg.Color = gridColor;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                gridColor = dlg.Color;
+
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void toggleModeToolStripMenuItem_Click(object sender, EventArgs e) //toggles finite and toroidal
+        {
+            GameRules.isToroidal = !GameRules.isToroidal;
+            UpdateBottomText();
+            string temp;
+            if (GameRules.isToroidal)
+            {
+                temp = "toroidal ";
+            } else
+            {
+                temp = "finite ";
+            }
+            MessageBox.Show("The mode has been switched to " + temp + "mode.");
         }
     }
 }

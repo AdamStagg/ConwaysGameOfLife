@@ -43,6 +43,7 @@ namespace Conway_s_Game_Of_Life
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runF5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseF4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,7 +51,16 @@ namespace Conway_s_Game_Of_Life
             this.randomizeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.randomizeCellsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.randomizeSeedCellsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cellColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aliveCellColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.settingsToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PauseGenButton = new System.Windows.Forms.ToolStrip();
             this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -61,8 +71,8 @@ namespace Conway_s_Game_Of_Life
             this.NextGenerationButton = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelGenerations = new System.Windows.Forms.ToolStripStatusLabel();
-            this.randomizeSeedCellsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.graphicsPanel1 = new Conway_s_Game_Of_Life.GraphicsPanel();
+            this.toggleModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.PauseGenButton.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -75,7 +85,8 @@ namespace Conway_s_Game_Of_Life
             this.toolsToolStripMenuItem,
             this.randomizeToolStripMenuItem,
             this.randomizeToolStripMenuItem1,
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(573, 24);
@@ -173,9 +184,18 @@ namespace Conway_s_Game_Of_Life
             // 
             // toolsToolStripMenuItem
             // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toggleGridToolStripMenuItem,
+            this.toggleModeToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "&View";
+            // 
+            // toggleGridToolStripMenuItem
+            // 
+            this.toggleGridToolStripMenuItem.Name = "toggleGridToolStripMenuItem";
+            this.toggleGridToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toggleGridToolStripMenuItem.Text = "Toggle Grid";
             // 
             // randomizeToolStripMenuItem
             // 
@@ -236,12 +256,80 @@ namespace Conway_s_Game_Of_Life
             this.settingsToolStripMenuItem1.Text = "Settings";
             this.settingsToolStripMenuItem1.Click += new System.EventHandler(this.settingsToolStripMenuItem1_Click);
             // 
+            // randomizeSeedCellsToolStripMenuItem
+            // 
+            this.randomizeSeedCellsToolStripMenuItem.Name = "randomizeSeedCellsToolStripMenuItem";
+            this.randomizeSeedCellsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+            this.randomizeSeedCellsToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.randomizeSeedCellsToolStripMenuItem.Text = "Randomize Settings";
+            this.randomizeSeedCellsToolStripMenuItem.Click += new System.EventHandler(this.randomizeSeedCellsToolStripMenuItem_Click);
+            // 
             // settingsToolStripMenuItem
             // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.backgroundColorToolStripMenuItem,
+            this.cellColorToolStripMenuItem,
+            this.aliveCellColorToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.settingsToolStripMenuItem2,
+            this.resetToolStripMenuItem,
+            this.reloadToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "&Settings";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // backgroundColorToolStripMenuItem
+            // 
+            this.backgroundColorToolStripMenuItem.Name = "backgroundColorToolStripMenuItem";
+            this.backgroundColorToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.backgroundColorToolStripMenuItem.Text = "Background Color";
+            this.backgroundColorToolStripMenuItem.Click += new System.EventHandler(this.backgroundColorToolStripMenuItem_Click);
+            // 
+            // cellColorToolStripMenuItem
+            // 
+            this.cellColorToolStripMenuItem.Name = "cellColorToolStripMenuItem";
+            this.cellColorToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.cellColorToolStripMenuItem.Text = "Cell Color";
+            this.cellColorToolStripMenuItem.Click += new System.EventHandler(this.cellColorToolStripMenuItem_Click);
+            // 
+            // aliveCellColorToolStripMenuItem
+            // 
+            this.aliveCellColorToolStripMenuItem.Name = "aliveCellColorToolStripMenuItem";
+            this.aliveCellColorToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.aliveCellColorToolStripMenuItem.Text = "Grid Color";
+            this.aliveCellColorToolStripMenuItem.Click += new System.EventHandler(this.aliveCellColorToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(167, 6);
+            // 
+            // settingsToolStripMenuItem2
+            // 
+            this.settingsToolStripMenuItem2.Name = "settingsToolStripMenuItem2";
+            this.settingsToolStripMenuItem2.Size = new System.Drawing.Size(170, 22);
+            this.settingsToolStripMenuItem2.Text = "&Settings";
+            this.settingsToolStripMenuItem2.Click += new System.EventHandler(this.settingsToolStripMenuItem2_Click);
+            // 
+            // resetToolStripMenuItem
+            // 
+            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.resetToolStripMenuItem.Text = "&Reset";
+            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
+            // 
+            // reloadToolStripMenuItem
+            // 
+            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.reloadToolStripMenuItem.Text = "&Reload";
+            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "&Help";
             // 
             // PauseGenButton
             // 
@@ -338,14 +426,6 @@ namespace Conway_s_Game_Of_Life
             this.toolStripStatusLabelGenerations.Size = new System.Drawing.Size(90, 17);
             this.toolStripStatusLabelGenerations.Text = "Generations = 0";
             // 
-            // randomizeSeedCellsToolStripMenuItem
-            // 
-            this.randomizeSeedCellsToolStripMenuItem.Name = "randomizeSeedCellsToolStripMenuItem";
-            this.randomizeSeedCellsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
-            this.randomizeSeedCellsToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.randomizeSeedCellsToolStripMenuItem.Text = "Randomize Settings";
-            this.randomizeSeedCellsToolStripMenuItem.Click += new System.EventHandler(this.randomizeSeedCellsToolStripMenuItem_Click);
-            // 
             // graphicsPanel1
             // 
             this.graphicsPanel1.BackColor = System.Drawing.SystemColors.Window;
@@ -356,6 +436,13 @@ namespace Conway_s_Game_Of_Life
             this.graphicsPanel1.TabIndex = 3;
             this.graphicsPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.graphicsPanel1_Paint);
             this.graphicsPanel1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.graphicsPanel1_MouseClick);
+            // 
+            // toggleModeToolStripMenuItem
+            // 
+            this.toggleModeToolStripMenuItem.Name = "toggleModeToolStripMenuItem";
+            this.toggleModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toggleModeToolStripMenuItem.Text = "Toggle Mode";
+            this.toggleModeToolStripMenuItem.Click += new System.EventHandler(this.toggleModeToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -369,6 +456,7 @@ namespace Conway_s_Game_Of_Life
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.PauseGenButton.ResumeLayout(false);
@@ -415,6 +503,16 @@ namespace Conway_s_Game_Of_Life
         private System.Windows.Forms.ToolStripMenuItem randomizeCellsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem randomizeSeedCellsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem backgroundColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cellColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aliveCellColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toggleGridToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toggleModeToolStripMenuItem;
     }
 }
 
