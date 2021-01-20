@@ -16,6 +16,9 @@ namespace Conway_s_Game_Of_Life
         static int xCellCount;
         static int yCellCount;
 
+        bool showGrid = true;
+        bool showNeighbors = false;
+
         // The universe array
         bool[,] universe = new bool[30, 30];
 
@@ -66,6 +69,7 @@ namespace Conway_s_Game_Of_Life
                 universe[cellsToToggle[i].cellX, cellsToToggle[i].cellY] = cellsToToggle[i].cellState;
             }
 
+        
 
 
             // Increment generation count
@@ -116,8 +120,44 @@ namespace Conway_s_Game_Of_Life
                         e.Graphics.FillRectangle(cellBrush, cellRect);
                     }
 
-                    // Outline the cell with a pen
-                    e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+                    if (showGrid)
+                    {
+                        // Outline the cell with a pen
+                        e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+                    }
+
+                    if (showNeighbors)
+                    {
+                        Brush redBrush = new SolidBrush(Color.Red);
+                        Brush greenBrush = new SolidBrush(Color.Green);
+
+                        int neighbors = 0;
+
+                        if (GameRules.isToroidal)
+                        {
+                            neighbors = GameRules.CountNeighborsToroidal(ref universe, x, y);
+                        }
+                        else
+                        {
+                            neighbors = GameRules.CountNeighborsFinite(ref universe, x, y);
+                        }
+                        PointF location = new PointF(cellRect.X + cellRect.Width / 2.2f, cellRect.Y + cellRect.Height / 2.2f);
+                        if (neighbors == 0)
+                        {
+                            continue;
+                        }
+                        else if (neighbors == 3 || (universe[x, y] && neighbors == 2))
+                        {
+                            e.Graphics.DrawString(neighbors.ToString(), graphicsPanel1.Font, greenBrush, location);
+                        }
+                        else
+                        {
+                            e.Graphics.DrawString(neighbors.ToString(), graphicsPanel1.Font, redBrush, location);
+                        }
+
+                        redBrush.Dispose();
+                        greenBrush.Dispose();
+                    }
                 }
             }
 
@@ -205,7 +245,12 @@ namespace Conway_s_Game_Of_Life
             }
         }
 
-        private void randomizeCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomizes all cells
+        private void randomizeCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomize from current seed
+        {
+            RandomizeCells();
+        }
+
+        private void RandomizeCells() //randomizes all cells
         {
             Random randy = new Random(seed);
 
@@ -225,7 +270,6 @@ namespace Conway_s_Game_Of_Life
             }
             graphicsPanel1.Invalidate();
             UpdateBottomText();
-
         }
 
         private void randomizeSeedCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomizes the settings
@@ -529,7 +573,30 @@ namespace Conway_s_Game_Of_Life
         private void fromRandomSeedToolStripMenuItem_Click(object sender, EventArgs e) //randomizes from a random seed
         {
             Random randy = new Random(seed);
-            seed = randy.Next(0, )
+            seed = randy.Next(0, 1073741824);
+
+            RandomizeCells();
+            
+        }
+
+        private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            seed = DateTime.Now.Millisecond;
+
+            RandomizeCells();
+        }
+
+        private void toggleGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showGrid = !showGrid;
+            graphicsPanel1.Invalidate();
+
+        }
+
+        private void toggleNeighborCountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showNeighbors = !showNeighbors;
+            graphicsPanel1.Invalidate();
         }
     }
 }

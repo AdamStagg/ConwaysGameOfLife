@@ -205,6 +205,7 @@ namespace Conway_s_Game_Of_Life
             this.toggleGridToolStripMenuItem.Name = "toggleGridToolStripMenuItem";
             this.toggleGridToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.toggleGridToolStripMenuItem.Text = "Toggle Grid";
+            this.toggleGridToolStripMenuItem.Click += new System.EventHandler(this.toggleGridToolStripMenuItem_Click);
             // 
             // randomizeToolStripMenuItem
             // 
@@ -468,6 +469,7 @@ namespace Conway_s_Game_Of_Life
             this.toggleNeighborCountToolStripMenuItem.Name = "toggleNeighborCountToolStripMenuItem";
             this.toggleNeighborCountToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.toggleNeighborCountToolStripMenuItem.Text = "&Toggle Neighbor Count";
+            this.toggleNeighborCountToolStripMenuItem.Click += new System.EventHandler(this.toggleNeighborCountToolStripMenuItem_Click);
             // 
             // toggleHUDToolStripMenuItem
             // 
@@ -492,6 +494,7 @@ namespace Conway_s_Game_Of_Life
             this.fromTimeToolStripMenuItem.Name = "fromTimeToolStripMenuItem";
             this.fromTimeToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.fromTimeToolStripMenuItem.Text = "&From time";
+            this.fromTimeToolStripMenuItem.Click += new System.EventHandler(this.fromTimeToolStripMenuItem_Click);
             // 
             // Form1
             // 
