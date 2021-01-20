@@ -356,16 +356,26 @@ namespace Conway_s_Game_Of_Life
             dlg.SetXCells(xCellCount);
             dlg.SetYCells(yCellCount);
 
-            if (DialogResult.OK == dlg.ShowDialog())
+            if (dlg.ShowDialog() != DialogResult.Cancel)
             {
-                timer.Interval = dlg.GetInterval();
-                xCellCount = dlg.GetXCells();
-                yCellCount = dlg.GetYCells();
-                universe = new bool[xCellCount, yCellCount];
+                DialogResult r = MessageBox.Show("This will delete the current universe. Is that ok?", "Warning", MessageBoxButtons.OKCancel);
+                if (r == DialogResult.OK)
+                {
+                  
 
-                graphicsPanel1.Invalidate();
-                UpdateBottomText();
+                    timer.Interval = dlg.GetInterval();
+                    xCellCount = dlg.GetXCells();
+                    yCellCount = dlg.GetYCells();
+                    universe = new bool[xCellCount, yCellCount];
+
+                    graphicsPanel1.Invalidate();
+                    UpdateBottomText();
+                }
             }
+
+
+
+
         }
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e) //reset the settings

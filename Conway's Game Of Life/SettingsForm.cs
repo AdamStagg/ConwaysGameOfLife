@@ -48,22 +48,5 @@ namespace Conway_s_Game_Of_Life
             return (int)yCellsSlider.Value;
         }
 
-        private void OKButton_Click(object sender, EventArgs e)
-        {
-          
-            
-            DialogResult r = MessageBox.Show("This will delete the current universe. Is that ok?", "Warning", MessageBoxButtons.OKCancel);
-            if (r == DialogResult.OK)
-            {
-                //close the current dialog button
-                OKButton.DialogResult = DialogResult.OK;
-                //this.Close();
-                
-            } else
-            {
-                OKButton.DialogResult = DialogResult.None;
-
-            }
-        }
     }
 }

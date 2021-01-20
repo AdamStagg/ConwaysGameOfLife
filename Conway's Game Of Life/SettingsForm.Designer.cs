@@ -56,13 +56,13 @@ namespace Conway_s_Game_Of_Life
             // 
             // OKButton
             // 
+            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Yes;
             this.OKButton.Location = new System.Drawing.Point(167, 151);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 0;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
-            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
             // 
             // panel1
             // 
