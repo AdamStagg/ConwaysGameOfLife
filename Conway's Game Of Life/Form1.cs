@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Conway_s_Game_Of_Life
         static int yCellCount;
 
         // The universe array
-        bool[,] universe = new bool[30,30];
+        bool[,] universe = new bool[30, 30];
 
         // Drawing colors
         Color gridColor;
@@ -38,14 +39,14 @@ namespace Conway_s_Game_Of_Life
 
             ReadSettings(); //reads all settings and updates the local equivilent
 
-            
+
             universe = new bool[xCellCount, yCellCount]; //initializes the universe
 
             // Setup the timer
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
 
-            
+
             UpdateBottomText(); //updates text at the bottom of the screen
         }
 
@@ -164,7 +165,7 @@ namespace Conway_s_Game_Of_Life
 
             //resets the settings
             generations = 0;
-           // GameRules.isToroidal = false;
+            // GameRules.isToroidal = false;
 
             //turns off the timer if its on
             timer.Enabled = false;
@@ -397,11 +398,51 @@ namespace Conway_s_Game_Of_Life
             if (GameRules.isToroidal)
             {
                 temp = "toroidal ";
-            } else
+            }
+            else
             {
                 temp = "finite ";
             }
             MessageBox.Show("The mode has been switched to " + temp + "mode.");
+
         }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) //save as
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "All Files|*.*|Cells|*.cells";
+            dlg.FilterIndex = 2;
+            dlg.DefaultExt = "cells";
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                StreamWriter sw = new StreamWriter(dlg.FileName);
+
+                sw.WriteLine("//This is a cells file, this contains data for the universe");
+                sw.WriteLine("//The size of the universe for this file is " + universe.GetLength(0) + " by " + universe.GetLength(1) + "\n");
+
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    string currentRow = "";
+
+                    for (int x = 0; x < universe.GetLength(0); x++)
+                    {
+                        if (universe[x, y])
+                        {
+                            currentRow += 'O';
+                        }
+                        else
+                        {
+                            currentRow += '.';
+                        }
+                    }
+                    sw.WriteLine(currentRow);
+                }
+                sw.Close();
+            }
+        }
+
+
+
     }
 }
