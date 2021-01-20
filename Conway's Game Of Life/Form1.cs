@@ -390,22 +390,6 @@ namespace Conway_s_Game_Of_Life
             }
         }
 
-        private void toggleModeToolStripMenuItem_Click(object sender, EventArgs e) //toggles finite and toroidal
-        {
-            GameRules.isToroidal = !GameRules.isToroidal;
-            UpdateBottomText();
-            string temp;
-            if (GameRules.isToroidal)
-            {
-                temp = "toroidal ";
-            }
-            else
-            {
-                temp = "finite ";
-            }
-            MessageBox.Show("The mode has been switched to " + temp + "mode.");
-
-        }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) //save as
         {
@@ -419,6 +403,7 @@ namespace Conway_s_Game_Of_Life
                 StreamWriter sw = new StreamWriter(dlg.FileName);
 
                 sw.WriteLine("//This is a cells file, this contains data for the universe");
+                sw.WriteLine("//" + DateTime.Now.ToString());
                 sw.WriteLine("//The size of the universe for this file is " + universe.GetLength(0) + " by " + universe.GetLength(1) + "\n");
 
                 for (int y = 0; y < universe.GetLength(1); y++)
@@ -442,7 +427,109 @@ namespace Conway_s_Game_Of_Life
             }
         }
 
+        private void openToolStripMenuItem_Click(object sender, EventArgs e) //open file
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
 
 
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                StreamReader sr = new StreamReader(dlg.FileName);
+
+                #region // resizing the array if its needed
+                int rowCount = 0;
+                int columnCount = 0;
+
+                while (!sr.EndOfStream) //loop to count how many rows exist in the file loaded
+                {
+                    string currentRow = sr.ReadLine();
+                    if (!string.IsNullOrEmpty(currentRow)) //ensure the line isnt empty
+                    {
+
+                        if ((currentRow[0] == '.') || (currentRow[0] == 'O')) //makes sure there is not a comment
+                        {
+                            rowCount++;
+                            columnCount = currentRow.Length;
+                        }
+                    }
+                }
+
+                if (universe.GetLength(0) < columnCount && universe.GetLength(1) > rowCount) //if statement to see if the x is longer than currently exists
+                {
+                    universe = new bool[columnCount, universe.GetLength(1)];
+                    xCellCount = columnCount;
+                }
+                else if ((universe.GetLength(0) > columnCount && universe.GetLength(1) < rowCount)) //checks if the y is longer than current
+                {
+                    universe = new bool[universe.GetLength(0), rowCount];
+                    yCellCount = rowCount;
+                }
+                else // else to resize both x and y in the array
+                {
+                    universe = new bool[columnCount, rowCount];
+                    xCellCount = columnCount;
+                    yCellCount = rowCount;
+                }
+                #endregion
+                sr.Close();
+
+                sr = new StreamReader(dlg.FileName);
+
+                int gCurrentRow = 0;
+                while (!sr.EndOfStream) //while loop that actually reads the file
+                {
+                    string srCurrentRow = sr.ReadLine();
+                    if (!string.IsNullOrEmpty(srCurrentRow)) //ensure the line isnt empty
+                    {
+
+                        if ((srCurrentRow[0] != '/') && !(srCurrentRow[0] == (char)0)) //makes sure there is not a comment
+                        {
+                            //read all the data
+
+                            for (int i = 0; i < srCurrentRow.Length; i++) //loops through the entire string and puts that into universe
+                            {
+                                if (srCurrentRow[i] == 'O')
+                                {
+                                    universe[i, gCurrentRow] = true;
+                                }
+                                else
+                                {
+                                    universe[i, gCurrentRow] = false;
+                                }
+                            }
+
+                            gCurrentRow++;
+
+
+                        }
+                    }
+                }
+                sr.Close();
+                graphicsPanel1.Invalidate();
+            }
+        }
+
+        private void toggleModeToolStripMenuItem1_Click(object sender, EventArgs e)//toggles finite and toroidal
+        {
+            GameRules.isToroidal = !GameRules.isToroidal;
+            UpdateBottomText();
+            string temp;
+            if (GameRules.isToroidal)
+            {
+                temp = "toroidal ";
+            }
+            else
+            {
+                temp = "finite ";
+            }
+            MessageBox.Show("The mode has been switched to " + temp + "mode.");
+
+        }
+
+        private void fromRandomSeedToolStripMenuItem_Click(object sender, EventArgs e) //randomizes from a random seed
+        {
+            Random randy = new Random(seed);
+            seed = randy.Next(0, )
+        }
     }
 }
