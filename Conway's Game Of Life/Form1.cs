@@ -32,6 +32,8 @@ namespace Conway_s_Game_Of_Life
         int seed = 0;
         private int randomizeCellsDensity = 50;
 
+        string filePath = "";
+
         public Form1()
         {
             InitializeComponent();
@@ -242,6 +244,47 @@ namespace Conway_s_Game_Of_Life
         #endregion
 
         #region file menu  
+        private void SaveFile(string _filePath)
+        {
+            StreamWriter sw = new StreamWriter(_filePath);
+            filePath = _filePath;
+
+            sw.WriteLine("//This is a cells file, this contains data for the universe");
+            sw.WriteLine("//" + DateTime.Now.ToString());
+            sw.WriteLine("//The size of the universe for this file is " + universe.GetLength(0) + " by " + universe.GetLength(1) + "\n");
+
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                string currentRow = "";
+
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    if (universe[x, y])
+                    {
+                        currentRow += 'O';
+                    }
+                    else
+                    {
+                        currentRow += '.';
+                    }
+                }
+                sw.WriteLine(currentRow);
+            }
+            sw.Close();
+        } //logic for saving the file given a path
+        private void SaveAsFile()
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "All Files|*.*|Cells|*.cells";
+            dlg.FilterIndex = 2;
+            dlg.DefaultExt = "cells";
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                SaveFile(dlg.FileName);
+            }
+        } //logic for saving the file using save as
+
         private void newToolStripButton_Click(object sender, EventArgs e) //new file
         {
             //turns every cell off
@@ -255,6 +298,7 @@ namespace Conway_s_Game_Of_Life
 
             //resets the settings
             generations = 0;
+            filePath = "";
             // GameRules.isToroidal = false;
 
             //turns off the timer if its on
@@ -264,49 +308,30 @@ namespace Conway_s_Game_Of_Life
             graphicsPanel1.Invalidate();
             UpdateBottomText();
         }
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(filePath)) //has the path, save normally
+            {
+                SaveFile(filePath);
+            } else //does not have a path, perform save as
+            {
+                SaveAsFile();
+            }
+        } //save
+
+ //save
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) //save as
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Filter = "All Files|*.*|Cells|*.cells";
-            dlg.FilterIndex = 2;
-            dlg.DefaultExt = "cells";
-
-            if (DialogResult.OK == dlg.ShowDialog())
-            {
-                StreamWriter sw = new StreamWriter(dlg.FileName);
-
-                sw.WriteLine("//This is a cells file, this contains data for the universe");
-                sw.WriteLine("//" + DateTime.Now.ToString());
-                sw.WriteLine("//The size of the universe for this file is " + universe.GetLength(0) + " by " + universe.GetLength(1) + "\n");
-
-                for (int y = 0; y < universe.GetLength(1); y++)
-                {
-                    string currentRow = "";
-
-                    for (int x = 0; x < universe.GetLength(0); x++)
-                    {
-                        if (universe[x, y])
-                        {
-                            currentRow += 'O';
-                        }
-                        else
-                        {
-                            currentRow += '.';
-                        }
-                    }
-                    sw.WriteLine(currentRow);
-                }
-                sw.Close();
-            }
+            SaveAsFile();
         }
         private void openToolStripMenuItem_Click(object sender, EventArgs e) //open file
         {
             OpenFileDialog dlg = new OpenFileDialog();
 
-
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 StreamReader sr = new StreamReader(dlg.FileName);
+                filePath = dlg.FileName;
 
                 #region // resizing the array if its needed
                 int rowCount = 0;
@@ -343,6 +368,7 @@ namespace Conway_s_Game_Of_Life
                     yCellCount = rowCount;
                 }
                 #endregion
+
                 sr.Close();
 
                 sr = new StreamReader(dlg.FileName);
@@ -381,8 +407,6 @@ namespace Conway_s_Game_Of_Life
             }
         }
 
-
-
         #endregion
 
         #region view menu
@@ -392,35 +416,36 @@ namespace Conway_s_Game_Of_Life
             showGrid = !showGrid;
             graphicsPanel1.Invalidate();
 
-        }
+        } //toggles grid
         private void toggleNeighborCountToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showNeighbors = !showNeighbors;
             graphicsPanel1.Invalidate();
-        }
+        } //toggles neighbor count
         private void toggleHUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showHUD = !showHUD;
             graphicsPanel1.Invalidate();
-        }
+        } //toggled HUD
 
         #endregion
 
         #region run menu 
+
         private void PauseButton_Click(object sender, EventArgs e)
         {
             timer.Enabled = false;
         }
-
         private void PlayButton_Click(object sender, EventArgs e)
         {
             timer.Enabled = true;
         }
-
         private void NextGenerationButton_Click(object sender, EventArgs e)
+
         {
             NextGeneration();
         }
+
         #endregion
 
         #region randomize menu
