@@ -18,23 +18,19 @@ namespace Conway_s_Game_Of_Life
 
         bool showGrid = true;
         bool showNeighbors = false;
+        bool showHUD = true;
 
-        // The universe array
         bool[,] universe = new bool[30, 30];
 
-        // Drawing colors
         Color gridColor;
         Color cellColor;
 
-        // The Timer class
         Timer timer = new Timer();
 
-        // Generation count
         int generations = 0;
 
-
         int seed = 0;
-        private int randomizeMaxValue = 50;
+        private int randomizeCellsDensity = 50;
 
         public Form1()
         {
@@ -53,233 +49,7 @@ namespace Conway_s_Game_Of_Life
             UpdateBottomText(); //updates text at the bottom of the screen
         }
 
-
-        // Calculate the next generation of cells
-        private void NextGeneration()
-        {
-
-            //creates a list to hold the cells that need to be toggled
-            List<CellPoint> cellsToToggle = new List<CellPoint>();
-            //clears the lsit, then adds to it
-            GameRules.CalculateRules(ref universe, cellsToToggle);
-
-            //iterates through all cells to be toggled
-            for (int i = 0; i < cellsToToggle.Count; i++)
-            {
-                universe[cellsToToggle[i].cellX, cellsToToggle[i].cellY] = cellsToToggle[i].cellState;
-            }
-
-        
-
-
-            // Increment generation count
-            generations++;
-
-            // Update status strip generations
-            UpdateBottomText();
-
-            graphicsPanel1.Invalidate();
-        }
-
-        // The event called by the timer every Interval milliseconds.
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            NextGeneration();
-        }
-
-        private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
-        {
-            // Calculate the width and height of each cell in pixels
-            // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
-            int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
-            // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
-            int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
-
-            // A Pen for drawing the grid lines (color, width)
-            Pen gridPen = new Pen(gridColor, 1);
-
-            // A Brush for filling living cells interiors (color)
-            Brush cellBrush = new SolidBrush(cellColor);
-
-            // Iterate through the universe in the y, top to bottom
-            for (int y = 0; y < universe.GetLength(1); y++)
-            {
-                // Iterate through the universe in the x, left to right
-                for (int x = 0; x < universe.GetLength(0); x++)
-                {
-                    // A rectangle to represent each cell in pixels
-                    Rectangle cellRect = Rectangle.Empty;
-                    cellRect.X = x * cellWidth;
-                    cellRect.Y = y * cellHeight;
-                    cellRect.Width = cellWidth;
-                    cellRect.Height = cellHeight;
-
-                    // Fill the cell with a brush if alive
-                    if (universe[x, y] == true)
-                    {
-                        e.Graphics.FillRectangle(cellBrush, cellRect);
-                    }
-
-                    if (showGrid)
-                    {
-                        // Outline the cell with a pen
-                        e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
-                    }
-
-                    if (showNeighbors)
-                    {
-                        Brush redBrush = new SolidBrush(Color.Red);
-                        Brush greenBrush = new SolidBrush(Color.Green);
-
-                        int neighbors = 0;
-
-                        if (GameRules.isToroidal)
-                        {
-                            neighbors = GameRules.CountNeighborsToroidal(ref universe, x, y);
-                        }
-                        else
-                        {
-                            neighbors = GameRules.CountNeighborsFinite(ref universe, x, y);
-                        }
-                        PointF location = new PointF(cellRect.X + cellRect.Width / 2.2f, cellRect.Y + cellRect.Height / 2.2f);
-                        if (neighbors == 0)
-                        {
-                            continue;
-                        }
-                        else if (neighbors == 3 || (universe[x, y] && neighbors == 2))
-                        {
-                            e.Graphics.DrawString(neighbors.ToString(), graphicsPanel1.Font, greenBrush, location);
-                        }
-                        else
-                        {
-                            e.Graphics.DrawString(neighbors.ToString(), graphicsPanel1.Font, redBrush, location);
-                        }
-
-                        redBrush.Dispose();
-                        greenBrush.Dispose();
-                    }
-                }
-            }
-
-            // Cleaning up pens and brushes
-            gridPen.Dispose();
-            cellBrush.Dispose();
-
-
-        }
-
-        private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e) //when you click, it updates the cells
-        {
-            // If the left mouse button was clicked
-            if (e.Button == MouseButtons.Left)
-            {
-                // Calculate the width and height of each cell in pixels
-                int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
-                int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
-
-                // Calculate the cell that was clicked in
-                // CELL X = MOUSE X / CELL WIDTH
-                int x = e.X / cellWidth;
-                // CELL Y = MOUSE Y / CELL HEIGHT
-                int y = e.Y / cellHeight;
-
-                // Toggle the cell's state
-                universe[x, y] = !universe[x, y];
-
-                // Tell Windows you need to repaint
-                graphicsPanel1.Invalidate();
-                UpdateBottomText();
-            }
-        }
-
-        private void newToolStripButton_Click(object sender, EventArgs e) //new file
-        {
-            //turns every cell off
-            for (int i = 0; i < universe.GetLength(0); i++)
-            {
-                for (int j = 0; j < universe.GetLength(1); j++)
-                {
-                    universe[i, j] = false;
-                }
-            }
-
-            //resets the settings
-            generations = 0;
-            // GameRules.isToroidal = false;
-
-            //turns off the timer if its on
-            timer.Enabled = false;
-
-            //resets the screen
-            graphicsPanel1.Invalidate();
-            UpdateBottomText();
-        }
-
-        private void PauseButton_Click(object sender, EventArgs e)
-        {
-            timer.Enabled = false;
-        }
-
-        private void PlayButton_Click(object sender, EventArgs e)
-        {
-            timer.Enabled = true;
-        }
-
-        private void NextGenerationButton_Click(object sender, EventArgs e)
-        {
-            NextGeneration();
-        }
-
-
-        private void settingsToolStripMenuItem1_Click(object sender, EventArgs e) //Displays the randomize menu
-        {
-            RandomizeForm dlg = new RandomizeForm();
-
-            dlg.SetSeed(seed);
-            dlg.SetDensity(randomizeMaxValue);
-
-            if (DialogResult.OK == dlg.ShowDialog())
-            {
-                seed = dlg.GetSeed();
-                randomizeMaxValue = dlg.GetDensity();
-            }
-        }
-
-        private void randomizeCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomize from current seed
-        {
-            RandomizeCells();
-        }
-
-        private void RandomizeCells() //randomizes all cells
-        {
-            Random randy = new Random(seed);
-
-            for (int i = 0; i < universe.GetLength(0); i++) //loops through all x
-            {
-                for (int j = 0; j < universe.GetLength(1); j++) //loops through all y
-                {
-                    if (randy.Next(0, 100) <= randomizeMaxValue)
-                    {
-                        universe[i, j] = true;
-                    }
-                    else
-                    {
-                        universe[i, j] = false;
-                    }
-                }
-            }
-            graphicsPanel1.Invalidate();
-            UpdateBottomText();
-        }
-
-        private void randomizeSeedCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomizes the settings
-        {
-            Random randy = new Random((int)DateTime.Now.Ticks);
-
-            seed = randy.Next(0, 1073741824);
-            randomizeMaxValue = randy.Next(0, 101);
-        }
-
+        #region misc events
         private void UpdateBottomText() //updates the text at the bottom of the screen
         {
             string generationText = "";
@@ -316,135 +86,184 @@ namespace Conway_s_Game_Of_Life
 
             toolStripStatusLabelGenerations.Text = generationText + modeText + cellsText + timerText;
         }
-
-        private void ReadSettings() //reads all settings and invalidates and updates the text
+        private void Timer_Tick(object sender, EventArgs e)
         {
-            timer.Interval = Properties.Settings.Default.TimerInterval;
-            cellColor = Properties.Settings.Default.CellColor;
-            gridColor = Properties.Settings.Default.GridColor;
-            xCellCount = Properties.Settings.Default.XCells;
-            yCellCount = Properties.Settings.Default.YCells;
-            graphicsPanel1.BackColor = Properties.Settings.Default.PanelColor;
-            universe = new bool[xCellCount, yCellCount];
-            graphicsPanel1.Invalidate();
-            UpdateBottomText();
+            NextGeneration();
         }
-
-        private void WriteSettings() //updates all the settings
+        private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e) //when you click, it updates the cells
         {
-            Properties.Settings.Default.TimerInterval = timer.Interval;
-            Properties.Settings.Default.CellColor = cellColor;
-            Properties.Settings.Default.GridColor = gridColor;
-            Properties.Settings.Default.XCells = xCellCount;
-            Properties.Settings.Default.YCells = yCellCount;
-            Properties.Settings.Default.PanelColor = graphicsPanel1.BackColor;
-        }
-
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e) //event when the form is closed
-        {
-            WriteSettings();
-
-            Properties.Settings.Default.Save();
-        }
-
-        private void settingsToolStripMenuItem2_Click(object sender, EventArgs e) //shows the settings dialog including timer interval and universe size
-        {
-
-            SettingsForm dlg = new SettingsForm();
-
-            dlg.SetInterval(timer.Interval);
-            dlg.SetXCells(xCellCount);
-            dlg.SetYCells(yCellCount);
-
-            if (dlg.ShowDialog() != DialogResult.Cancel)
+            // If the left mouse button was clicked
+            if (e.Button == MouseButtons.Left)
             {
-                DialogResult r = MessageBox.Show("This will delete the current universe. Is that ok?", "Warning", MessageBoxButtons.OKCancel);
-                if (r == DialogResult.OK)
+                // Calculate the width and height of each cell in pixels
+                int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
+                int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
+
+                // Calculate the cell that was clicked in
+                // CELL X = MOUSE X / CELL WIDTH
+                int x = e.X / cellWidth;
+                // CELL Y = MOUSE Y / CELL HEIGHT
+                int y = e.Y / cellHeight;
+
+                // Toggle the cell's state
+                universe[x, y] = !universe[x, y];
+
+                // Tell Windows you need to repaint
+                graphicsPanel1.Invalidate();
+                UpdateBottomText();
+            }
+        }
+        private void NextGeneration()
+        {
+
+            //creates a list to hold the cells that need to be toggled
+            List<CellPoint> cellsToToggle = new List<CellPoint>();
+            //clears the lsit, then adds to it
+            GameRules.CalculateRules(ref universe, cellsToToggle);
+
+            //iterates through all cells to be toggled
+            for (int i = 0; i < cellsToToggle.Count; i++)
+            {
+                universe[cellsToToggle[i].cellX, cellsToToggle[i].cellY] = cellsToToggle[i].cellState;
+            }
+
+        
+
+
+            // Increment generation count
+            generations++;
+
+            // Update status strip generations
+            UpdateBottomText();
+
+            graphicsPanel1.Invalidate();
+        }
+        private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
+        {
+            // Calculate the width and height of each cell in pixels
+            // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
+            int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
+            // CELL HEIGHT = WINDOW HEIGHT / NUMBER OF CELLS IN Y
+            int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
+
+            // A Pen for drawing the grid lines (color, width)
+            Pen gridPen = new Pen(gridColor, 1);
+
+            // A Brush for filling living cells interiors (color)
+            Brush cellBrush = new SolidBrush(cellColor);
+
+            for (int y = 0; y < universe.GetLength(1); y++) //loop all y
+            {
+                
+                for (int x = 0; x < universe.GetLength(0); x++) //loop all x
                 {
-                  
+                    // A rectangle to represent each cell in pixels
+                    Rectangle cellRect = Rectangle.Empty;
+                    cellRect.X = x * cellWidth;
+                    cellRect.Y = y * cellHeight;
+                    cellRect.Width = cellWidth;
+                    cellRect.Height = cellHeight;
 
-                    timer.Interval = dlg.GetInterval();
-                    xCellCount = dlg.GetXCells();
-                    yCellCount = dlg.GetYCells();
-                    universe = new bool[xCellCount, yCellCount];
+                    if (universe[x, y] == true) 
+                    {
+                        e.Graphics.FillRectangle(cellBrush, cellRect);
+                    } // Fill the cell with a brush if alive
 
-                    graphicsPanel1.Invalidate();
-                    UpdateBottomText();
+                    if (showGrid)
+                    {
+                        // Outline the cell with a pen
+                        e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+                    } //toggles showing the gridlines
+
+                    if (showHUD) 
+                    {
+                        Brush brush = new SolidBrush(Color.Red);
+                        PointF location = new PointF(1, graphicsPanel1.ClientSize.Height - 30);
+                        string toroid = GameRules.isToroidal ? "Toroidal" : "Finite";
+                        string[] HUDSentences = new string[]
+                        {
+                            $"Generations: {generations}",
+                            $"Seed: {seed}",
+                            $"Boundary mode: {toroid}",
+                            $"Universe size: {universe.GetLength(0)} x {universe.GetLength(1)}"
+                        };
+
+                        for (int i = 0; i < HUDSentences.Length; i++)
+                        {
+                            e.Graphics.DrawString(HUDSentences[i], graphicsPanel1.Font, brush, location);
+
+                            location.Y -= 15;
+                        }
+                    }//displays the heads up display
+
+                    if (showNeighbors) 
+                    {
+                        Brush redBrush = new SolidBrush(Color.Red);
+                        Brush greenBrush = new SolidBrush(Color.Green);
+
+                        int neighbors = 0;
+
+                        if (GameRules.isToroidal)
+                        {
+                            neighbors = GameRules.CountNeighborsToroidal(ref universe, x, y);
+                        }
+                        else
+                        {
+                            neighbors = GameRules.CountNeighborsFinite(ref universe, x, y);
+                        }
+
+                        PointF location = new PointF(cellRect.X + cellRect.Width / 2.2f, cellRect.Y + cellRect.Height / 2.2f);
+                        if (neighbors == 0)
+                        {
+                            continue;
+                        }
+                        else if (neighbors == 3 || (universe[x, y] && neighbors == 2))
+                        {
+                            e.Graphics.DrawString(neighbors.ToString(), graphicsPanel1.Font, greenBrush, location);
+                        }
+                        else
+                        {
+                            e.Graphics.DrawString(neighbors.ToString(), graphicsPanel1.Font, redBrush, location);
+                        }
+
+                        redBrush.Dispose();
+                        greenBrush.Dispose();
+                    }//shows the neighbor count
                 }
             }
 
-
+            // Cleaning up pens and brushes
+            gridPen.Dispose();
+            cellBrush.Dispose();
 
 
         }
 
-        private void resetToolStripMenuItem_Click(object sender, EventArgs e) //reset the settings
+        #endregion
+
+        #region file menu  
+        private void newToolStripButton_Click(object sender, EventArgs e) //new file
         {
-            DialogResult r = MessageBox.Show("This will reset all settings and delete the universe. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
-
-            if (r == DialogResult.Yes)
+            //turns every cell off
+            for (int i = 0; i < universe.GetLength(0); i++)
             {
-                Properties.Settings.Default.Reset();
-
-                ReadSettings();
+                for (int j = 0; j < universe.GetLength(1); j++)
+                {
+                    universe[i, j] = false;
+                }
             }
+
+            //resets the settings
+            generations = 0;
+            // GameRules.isToroidal = false;
+
+            //turns off the timer if its on
+            timer.Enabled = false;
+
+            //resets the screen
+            graphicsPanel1.Invalidate();
+            UpdateBottomText();
         }
-
-        private void reloadToolStripMenuItem_Click(object sender, EventArgs e) //reloads the settings
-        {
-            DialogResult r = MessageBox.Show("This will reset all settings and delete the universe. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
-
-            if (r == DialogResult.Yes)
-            {
-                Properties.Settings.Default.Reload();
-
-                ReadSettings();
-            }
-        }
-
-        private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e) //shows dialog to change background color
-        {
-            ColorDialog dlg = new ColorDialog();
-
-            dlg.Color = graphicsPanel1.BackColor;
-
-            if (DialogResult.OK == dlg.ShowDialog())
-            {
-                graphicsPanel1.BackColor = dlg.Color;
-
-                graphicsPanel1.Invalidate();
-            }
-        }
-
-        private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)//shows dialog to change cell color
-        {
-            ColorDialog dlg = new ColorDialog();
-
-            dlg.Color = cellColor;
-
-            if (DialogResult.OK == dlg.ShowDialog())
-            {
-                cellColor = dlg.Color;
-
-                graphicsPanel1.Invalidate();
-            }
-        }
-
-        private void aliveCellColorToolStripMenuItem_Click(object sender, EventArgs e)//shows dialog to change grid color
-        {
-            ColorDialog dlg = new ColorDialog();
-
-            dlg.Color = gridColor;
-
-            if (DialogResult.OK == dlg.ShowDialog())
-            {
-                gridColor = dlg.Color;
-
-                graphicsPanel1.Invalidate();
-            }
-        }
-
-
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) //save as
         {
             SaveFileDialog dlg = new SaveFileDialog();
@@ -480,7 +299,6 @@ namespace Conway_s_Game_Of_Life
                 sw.Close();
             }
         }
-
         private void openToolStripMenuItem_Click(object sender, EventArgs e) //open file
         {
             OpenFileDialog dlg = new OpenFileDialog();
@@ -563,6 +381,184 @@ namespace Conway_s_Game_Of_Life
             }
         }
 
+
+
+        #endregion
+
+        #region view menu
+
+        private void toggleGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showGrid = !showGrid;
+            graphicsPanel1.Invalidate();
+
+        }
+        private void toggleNeighborCountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showNeighbors = !showNeighbors;
+            graphicsPanel1.Invalidate();
+        }
+        private void toggleHUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showHUD = !showHUD;
+            graphicsPanel1.Invalidate();
+        }
+
+        #endregion
+
+        #region run menu 
+        private void PauseButton_Click(object sender, EventArgs e)
+        {
+            timer.Enabled = false;
+        }
+
+        private void PlayButton_Click(object sender, EventArgs e)
+        {
+            timer.Enabled = true;
+        }
+
+        private void NextGenerationButton_Click(object sender, EventArgs e)
+        {
+            NextGeneration();
+        }
+        #endregion
+
+        #region randomize menu
+
+        private void RandomizeCells() //randomizes all cells
+        {
+            Random randy = new Random(seed);
+
+            for (int i = 0; i < universe.GetLength(0); i++) //loops through all x
+            {
+                for (int j = 0; j < universe.GetLength(1); j++) //loops through all y
+                {
+                    if (randy.Next(0, 100) <= randomizeCellsDensity)
+                    {
+                        universe[i, j] = true;
+                    }
+                    else
+                    {
+                        universe[i, j] = false;
+                    }
+                }
+            }
+            graphicsPanel1.Invalidate();
+            UpdateBottomText();
+        }
+
+        private void randomizeCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomize from current seed
+        {
+            RandomizeCells();
+        }
+        private void fromRandomSeedToolStripMenuItem_Click(object sender, EventArgs e) //randomizes from a random seed
+        {
+            Random randy = new Random(seed);
+            seed = randy.Next(0, 1073741824);
+
+            RandomizeCells();
+            
+        }
+        private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            seed = DateTime.Now.Millisecond;
+
+            RandomizeCells();
+        } //randomizes from the current time
+        private void settingsToolStripMenuItem1_Click(object sender, EventArgs e) //Displays the randomize menu
+        {
+            RandomizeForm dlg = new RandomizeForm();
+
+            dlg.SetSeed(seed);
+            dlg.SetDensity(randomizeCellsDensity);
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                seed = dlg.GetSeed();
+                randomizeCellsDensity = dlg.GetDensity();
+                graphicsPanel1.Invalidate();
+            }
+        }
+        private void randomizeSeedCellsToolStripMenuItem_Click(object sender, EventArgs e) //randomizes the settings
+        {
+            Random randy = new Random((int)DateTime.Now.Ticks);
+
+            seed = randy.Next(0, 1073741824);
+            randomizeCellsDensity = randy.Next(0, 101);
+            graphicsPanel1.Invalidate();
+        }
+
+        #endregion
+
+        #region settings menu
+        private void ReadSettings() //reads all settings and invalidates and updates the text
+        {
+            timer.Interval = Properties.Settings.Default.TimerInterval;
+            cellColor = Properties.Settings.Default.CellColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            xCellCount = Properties.Settings.Default.XCells;
+            yCellCount = Properties.Settings.Default.YCells;
+            graphicsPanel1.BackColor = Properties.Settings.Default.PanelColor;
+            universe = new bool[xCellCount, yCellCount];
+            graphicsPanel1.Invalidate();
+            UpdateBottomText();
+        }
+        private void WriteSettings() //updates all the settings
+        {
+            Properties.Settings.Default.TimerInterval = timer.Interval;
+            Properties.Settings.Default.CellColor = cellColor;
+            Properties.Settings.Default.GridColor = gridColor;
+            Properties.Settings.Default.XCells = xCellCount;
+            Properties.Settings.Default.YCells = yCellCount;
+            Properties.Settings.Default.PanelColor = graphicsPanel1.BackColor;
+        }
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e) //event when the form is closed
+        {
+            WriteSettings();
+
+            Properties.Settings.Default.Save();
+        }
+
+        private void backgroundColorToolStripMenuItem_Click(object sender, EventArgs e) //shows dialog to change background color
+        {
+            ColorDialog dlg = new ColorDialog();
+
+            dlg.Color = graphicsPanel1.BackColor;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                graphicsPanel1.BackColor = dlg.Color;
+
+                graphicsPanel1.Invalidate();
+            }
+        }
+        private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)//shows dialog to change cell color
+        {
+            ColorDialog dlg = new ColorDialog();
+
+            dlg.Color = cellColor;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                cellColor = dlg.Color;
+
+                graphicsPanel1.Invalidate();
+            }
+        }
+        private void aliveCellColorToolStripMenuItem_Click(object sender, EventArgs e)//shows dialog to change grid color
+        {
+            ColorDialog dlg = new ColorDialog();
+
+            dlg.Color = gridColor;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                gridColor = dlg.Color;
+
+                graphicsPanel1.Invalidate();
+            }
+        }
+
         private void toggleModeToolStripMenuItem1_Click(object sender, EventArgs e)//toggles finite and toroidal
         {
             GameRules.isToroidal = !GameRules.isToroidal;
@@ -576,37 +572,64 @@ namespace Conway_s_Game_Of_Life
             {
                 temp = "finite ";
             }
+            graphicsPanel1.Invalidate();
             MessageBox.Show("The mode has been switched to " + temp + "mode.");
 
         }
 
-        private void fromRandomSeedToolStripMenuItem_Click(object sender, EventArgs e) //randomizes from a random seed
+        private void settingsToolStripMenuItem2_Click(object sender, EventArgs e) //shows the settings dialog including timer interval and universe size
         {
-            Random randy = new Random(seed);
-            seed = randy.Next(0, 1073741824);
 
-            RandomizeCells();
-            
+            SettingsForm dlg = new SettingsForm();
+
+            dlg.SetInterval(timer.Interval);
+            dlg.SetXCells(xCellCount);
+            dlg.SetYCells(yCellCount);
+
+            if (dlg.ShowDialog() != DialogResult.Cancel)
+            {
+                DialogResult r = MessageBox.Show("This will delete the current universe. Is that ok?", "Warning", MessageBoxButtons.OKCancel);
+                if (r == DialogResult.OK)
+                {
+                  
+
+                    timer.Interval = dlg.GetInterval();
+                    xCellCount = dlg.GetXCells();
+                    yCellCount = dlg.GetYCells();
+                    universe = new bool[xCellCount, yCellCount];
+
+                    graphicsPanel1.Invalidate();
+                    UpdateBottomText();
+                }
+            }
+
+
+
+
         }
-
-        private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e) //reset the settings
         {
-            seed = DateTime.Now.Millisecond;
+            DialogResult r = MessageBox.Show("This will reset all settings and delete the universe. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
 
-            RandomizeCells();
+            if (r == DialogResult.Yes)
+            {
+                Properties.Settings.Default.Reset();
+
+                ReadSettings();
+            }
         }
-
-        private void toggleGridToolStripMenuItem_Click(object sender, EventArgs e)
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e) //reloads the settings
         {
-            showGrid = !showGrid;
-            graphicsPanel1.Invalidate();
+            DialogResult r = MessageBox.Show("This will reset all settings and delete the universe. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
 
-        }
+            if (r == DialogResult.Yes)
+            {
+                Properties.Settings.Default.Reload();
 
-        private void toggleNeighborCountToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showNeighbors = !showNeighbors;
-            graphicsPanel1.Invalidate();
+                ReadSettings();
+            }
         }
+        #endregion
+
     }
 }
